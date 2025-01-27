@@ -29,8 +29,7 @@ def haversine_distance(lat1, lon1, lat2, lon2):
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
     # Distance in kilometers
-    distance = R * c
-    return distance
+    return R * c
 
 def match_closest_points(array1, array2):
     """
@@ -43,8 +42,10 @@ def match_closest_points(array1, array2):
     Returns:
     List of tuples where each tuple is (point_from_array1, closest_point_from_array2)
     """
-    matches = []
+    if not array2:
+        return []
 
+    matches = []
     for point1 in array1:
         lat1, lon1 = point1
         closest_point = None
@@ -59,13 +60,12 @@ def match_closest_points(array1, array2):
                 closest_point = point2
 
         matches.append((point1, closest_point))
-
     return matches
 
-# Example usage
 if __name__ == "__main__":
-    array1 = [(37.7749, -122.4194), (34.0522, -118.2437)]  # Example array 1 (San Francisco, Los Angeles)
-    array2 = [(40.7128, -74.0060), (36.1699, -115.1398)]  # Example array 2 (New York, Las Vegas)
+    # Example usage
+    array1 = [(37.7749, -122.4194), (34.0522, -118.2437)]
+    array2 = [(40.7128, -74.0060), (36.1699, -115.1398)]
 
     matches = match_closest_points(array1, array2)
     for match in matches:
