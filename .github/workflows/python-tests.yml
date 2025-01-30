@@ -28,22 +28,34 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        pip install coverage  # Install the coverage package
+        pip install coverage snakeviz  # Install coverage and profiling tools
 
     # Step 4: Run tests with coverage
     - name: Run tests and measure coverage
       run: |
         coverage run -m unittest discover -s . -p "test_*.py"
 
-    # Step 5: Report coverage
+    # Step 5: Generate coverage report
     - name: Generate coverage report
       run: |
         coverage report
-        coverage html  # Optional: Generate an HTML report for coverage
+        coverage html
 
-    # Step 6: Upload coverage report as an artifact (optional)
-    - name: Upload coverage report
+    # Step 6: Profile tests
+    - name: Profile tests
+      run: |
+        python -m cProfile -o profile_output.prof -m unittest discover -s . -p "test_*.py"
+
+    # Step 7: Convert profiling data to readable format
+    - name: Generate profiling report
+      run: |
+        python -c "import pstats; p = pstats.Stats('profile_output.prof'); p.strip_dirs().sort_stats('cumulative').print_stats(50)" > profiling_report.txt
+
+    # Step 8: Upload coverage and profiling reports
+    - name: Upload reports
       uses: actions/upload-artifact@v3
       with:
-        name: coverage-report
-        path: htmlcov  # The directory where the HTML report is generated
+        name: reports
+        path: |
+          htmlcov  # HTML coverage report
+          profiling_report.txt  # Text-based profiling report
